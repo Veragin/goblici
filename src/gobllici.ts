@@ -1,34 +1,5 @@
-import {
-    ALL_UNITS,
-    TBoard,
-    TILE_SEPARATOR,
-    TPlayer,
-    TUnit,
-    UNIT_SEPARATOR,
-    WINSTATE,
-} from './constants';
-
-export const nextMoves = (step: string) => {
-    const board = parseStep(step);
-
-    const player = board.playerTurn;
-    const allUsedUnits = board.board.flatMap((unit) => unit);
-    const usedUnits = allUsedUnits.filter((unit) => unit[1] === player);
-    const notUsedTypes = ALL_UNITS[player].filter(
-        (type) => usedUnits.reduce((r, u) => r + Number(u === type), 0) < 2
-    );
-};
-
-const movesByAddingNewUnit = (board: TBoard, unit: TUnit) => {
-    const moves;
-};
-
-const copyBoardWithOponentsTurn = (board: TBoard): TBoard => {
-    return {
-        playerTurn: board.playerTurn === 'A' ? 'B' : 'A',
-        board: board.board.map((tiles) => tiles.map((u) => u)),
-    };
-};
+import { ALL_UNITS, TBoard, TILE_SEPARATOR, TPlayer, TUnit, UNIT_SEPARATOR } from './constants';
+import { movesByAddingNewUnit, movesByMovingUnit } from './moves';
 
 export const parseStep = (step: string): TBoard => {
     const [playerTurn, ...tiles] = step.split(TILE_SEPARATOR);

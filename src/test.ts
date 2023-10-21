@@ -1,5 +1,8 @@
 import { Draw, PlayerAWon, PlayerBWon, checkWin } from './checkWin';
-import { nextMoves, parseStep } from './gobllici';
+import { parseStep } from './gobllici';
+import { movesByAddingNewUnit, movesByMovingUnit, nextMoves } from './moves';
+
+// check win
 
 const checkWinStep = (step: string, expect: 'DRAW' | 'PLAYERA' | 'PLAYERB' | 'NOTHING') => {
     try {
@@ -34,8 +37,18 @@ checkWinStep(case4, 'PLAYERB');
 const case5 = 'A;;;;;;;;;1A';
 checkWinStep(case5, 'NOTHING');
 
-nextMoves(case1);
-nextMoves(case2);
-nextMoves(case3);
+// moves
+
+const board = parseStep(case1);
+const moves1 = movesByAddingNewUnit(board, '2A');
+if (moves1.length !== 6) throw new Error();
+
+const moves2 = movesByMovingUnit(board, 0);
+if (moves2.length !== 8) throw new Error();
+
+// nextMOves
+
+const moves3 = nextMoves(case1);
+console.log(moves3);
 
 console.log('Test were successful');
