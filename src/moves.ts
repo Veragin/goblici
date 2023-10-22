@@ -1,9 +1,7 @@
 import { ALL_UNITS, TBoard, TUnit } from './constants';
-import { createStep, parseStep } from './gobllici';
+import { createStep } from './utils';
 
-export const nextMoves = (step: string) => {
-    const board = parseStep(step);
-
+export const nextMoves = (board: TBoard) => {
     const player = board.playerTurn;
     const allUsedUnits = board.board.flatMap((unit) => unit);
     const usedUnits = allUsedUnits.filter((unit) => unit[1] === player);

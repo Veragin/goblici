@@ -1,6 +1,6 @@
 import { Draw, PlayerAWon, PlayerBWon, checkWin } from './checkWin';
-import { parseStep } from './gobllici';
 import { movesByAddingNewUnit, movesByMovingUnit, nextMoves } from './moves';
+import { parseStep } from './utils';
 
 // check win
 
@@ -48,7 +48,7 @@ if (moves2.length !== 8) throw new Error();
 
 // nextMOves
 
-const moves3 = nextMoves(case1);
+const moves3 = nextMoves(board);
 console.log(moves3);
 
 console.log('Test were successful');

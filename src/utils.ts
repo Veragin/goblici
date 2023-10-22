@@ -1,5 +1,4 @@
-import { ALL_UNITS, TBoard, TILE_SEPARATOR, TPlayer, TUnit, UNIT_SEPARATOR } from './constants';
-import { movesByAddingNewUnit, movesByMovingUnit } from './moves';
+import { TBoard, TILE_SEPARATOR, UNIT_SEPARATOR, TPlayer, TUnit } from './constants';
 
 export const parseStep = (step: string): TBoard => {
     const [playerTurn, ...tiles] = step.split(TILE_SEPARATOR);
