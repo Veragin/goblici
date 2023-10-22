@@ -1,64 +1,96 @@
+import { checkSame } from './checkSame';
 import { Draw, PlayerAWon, PlayerBWon, checkWin } from './checkWin';
-import { INIT_STEP, TEndState } from './constants';
+import { INIT_STEP, TBoard, TEndState } from './constants';
 import { nextMoves } from './moves';
-import { parseStep } from './utils';
+import { createStep, parseStep } from './utils';
 
-export const tree: Record<string, Set<string> | TEndState> = {};
+export const tree: Record<
+    string,
+    {
+        board: TBoard;
+        next: TBoard[] | TBoard | TEndState;
+    }
+> = {};
 
-let notSolvedSteps: string[] = [];
-let notSolvedNextLevelSteps: string[] = [];
+let notSolvedBoards: TBoard[] = [];
+let notSolvedNextLevelBoards: TBoard[] = [];
 let depth = 0;
 
 export const buildTree = () => {
-    notSolvedSteps = [INIT_STEP];
+    const initBoard = parseStep(INIT_STEP);
+    notSolvedBoards = [initBoard];
     processLevel();
 
-    console.log(Object.keys(tree).length);
-    console.log(notSolvedSteps.length);
-    console.log(notSolvedNextLevelSteps.length);
+    console.log('tree length', Object.keys(tree).length);
+    console.log(notSolvedBoards.length);
+    console.log(notSolvedNextLevelBoards.length);
+    console.log(tree);
 };
 
 const processLevel = () => {
-    if (notSolvedSteps.length === 0) return;
+    if (notSolvedBoards.length === 0) return;
     if (depth > 2) return;
     depth++;
 
-    for (let step of notSolvedSteps) {
-        processStep(step);
+    for (let board of notSolvedBoards) {
+        processBoard(board);
     }
 
-    notSolvedSteps = notSolvedNextLevelSteps;
-    notSolvedNextLevelSteps = [];
+    notSolvedBoards = notSolvedNextLevelBoards;
+    notSolvedNextLevelBoards = [];
     processLevel();
 };
 
-const processStep = (step: string) => {
+const processBoard = (board: TBoard) => {
+    const step = createStep(board);
     try {
-        const board = parseStep(step);
         checkWin(board);
-        const nextSteps = nextMoves(board);
-        tree[step] = nextSteps;
+        const sameBoard = checkSame(board);
 
-        nextSteps.forEach((nextStep) => {
+        if (sameBoard) {
+            tree[step] = {
+                board,
+                next: sameBoard,
+            };
+            return;
+        }
+
+        const nextBoards = nextMoves(board);
+        tree[step] = {
+            board,
+            next: nextBoards,
+        };
+
+        nextBoards.forEach((nextBoard) => {
+            const nextStep = createStep(nextBoard);
             if (
                 tree[nextStep] === undefined &&
-                !notSolvedNextLevelSteps.includes(nextStep) &&
-                !notSolvedSteps.includes(nextStep)
+                !notSolvedNextLevelBoards.includes(nextBoard) &&
+                !notSolvedBoards.includes(nextBoard)
             ) {
-                notSolvedNextLevelSteps.push(nextStep);
+                notSolvedNextLevelBoards.push(nextBoard);
             }
         });
     } catch (e) {
         if (e instanceof Draw) {
-            tree[step] = 'DRAW';
+            tree[step] = {
+                board,
+                next: 'DRAW',
+            };
             return;
         }
         if (e instanceof PlayerAWon) {
-            tree[step] = 'PLAYER_A';
+            tree[step] = {
+                board,
+                next: 'PLAYER_A',
+            };
             return;
         }
         if (e instanceof PlayerBWon) {
-            tree[step] = 'PLAYER_B';
+            tree[step] = {
+                board,
+                next: 'PLAYER_B',
+            };
             return;
         }
         console.error(e);

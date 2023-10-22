@@ -1,6 +1,7 @@
+import { checkSame } from './checkSame';
 import { Draw, PlayerAWon, PlayerBWon, checkWin } from './checkWin';
 import { movesByAddingNewUnit, movesByMovingUnit, nextMoves } from './moves';
-import { parseStep } from './utils';
+import { createStep, parseStep } from './utils';
 
 // check win
 
@@ -46,9 +47,23 @@ if (moves1.length !== 6) throw new Error();
 const moves2 = movesByMovingUnit(board, 0);
 if (moves2.length !== 8) throw new Error();
 
-// nextMOves
+// checkSame
 
-const moves3 = nextMoves(board);
-console.log(moves3);
+const checkSameStep = (step: string) => {
+    const board = parseStep(step);
+    const res = checkSame(board);
+    if (!res) return null;
+    return createStep(res);
+};
+
+const mainStep = 'A;3A;;;;;;;;';
+checkSameStep(mainStep);
+console.log(checkSameStep('A;;;;;;;3A;;'));
+console.log(checkSameStep('A;;;3A;;;;;;'));
+
+// nextMoves
+
+/*const moves3 = nextMoves(board);
+console.log(moves3);*/
 
 console.log('Test were successful');

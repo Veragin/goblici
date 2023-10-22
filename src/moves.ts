@@ -1,37 +1,37 @@
 import { ALL_UNITS, TBoard, TUnit } from './constants';
-import { createStep } from './utils';
 
 export const nextMoves = (board: TBoard) => {
     const player = board.playerTurn;
+
     const allUsedUnits = board.board.flatMap((unit) => unit);
     const usedUnits = allUsedUnits.filter((unit) => unit[1] === player);
     const notUsedTypes = ALL_UNITS[player].filter(
         (type) => usedUnits.reduce((r, u) => r + Number(u === type), 0) < 2
     );
 
-    const nextSteps: Set<string> = new Set();
+    const nextBoards: TBoard[] = [];
     notUsedTypes.forEach((unit) => {
-        const steps = movesByAddingNewUnit(board, unit);
-        steps.forEach((step) => nextSteps.add(step));
+        const bs = movesByAddingNewUnit(board, unit);
+        nextBoards.push(...bs);
     });
 
     board.board.forEach((d, index) => {
-        const steps = movesByMovingUnit(board, index);
-        steps.forEach((step) => nextSteps.add(step));
+        const bs = movesByMovingUnit(board, index);
+        nextBoards.push(...bs);
     });
 
-    return nextSteps;
+    return nextBoards;
 };
 
 export const movesByAddingNewUnit = (board: TBoard, unit: TUnit) => {
-    const res: string[] = [];
+    const res: TBoard[] = [];
 
     for (let i in board.board) {
         if (!canAddUnitToTile(unit, board.board[i])) continue;
 
         const newBoard = copyBoardWithOponentsTurn(board);
         newBoard.board[i].push(unit);
-        res.push(createStep(newBoard));
+        res.push(newBoard);
     }
 
     return res;
@@ -43,7 +43,7 @@ export const movesByMovingUnit = (board: TBoard, index: number) => {
     const unit = units[units.length - 1];
     if (unit[1] !== board.playerTurn) return [];
 
-    const res: string[] = [];
+    const res: TBoard[] = [];
 
     for (let i in board.board) {
         if (Number(i) === index) continue;
@@ -52,7 +52,7 @@ export const movesByMovingUnit = (board: TBoard, index: number) => {
         const newBoard = copyBoardWithOponentsTurn(board);
         newBoard.board[i].push(unit);
         newBoard.board[index].pop();
-        res.push(createStep(newBoard));
+        res.push(newBoard);
     }
 
     return res;
