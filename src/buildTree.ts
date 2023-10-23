@@ -15,22 +15,19 @@ export const tree: Record<
 let notSolvedBoards: TBoard[] = [];
 let notSolvedNextLevelBoards: TBoard[] = [];
 let depth = 0;
+let active = 0;
 
 export const buildTree = () => {
     const initBoard = parseStep(INIT_STEP);
     notSolvedBoards = [initBoard];
     processLevel();
-
-    console.log('tree length', Object.keys(tree).length);
-    console.log(notSolvedBoards.length);
-    console.log(notSolvedNextLevelBoards.length);
-    console.log(tree);
 };
 
 const processLevel = () => {
     if (notSolvedBoards.length === 0) return;
-    if (depth > 2) return;
+    if (depth > 3) return;
     depth++;
+    active = 0;
 
     for (let board of notSolvedBoards) {
         processBoard(board);
@@ -38,6 +35,12 @@ const processLevel = () => {
 
     notSolvedBoards = notSolvedNextLevelBoards;
     notSolvedNextLevelBoards = [];
+
+    console.log('ROUND', depth);
+    console.log('tree length', Object.keys(tree).length);
+    console.log('to process', notSolvedBoards.length);
+    console.log('active', active);
+
     processLevel();
 };
 
@@ -60,6 +63,7 @@ const processBoard = (board: TBoard) => {
             board,
             next: nextBoards,
         };
+        active++;
 
         nextBoards.forEach((nextBoard) => {
             const nextStep = createStep(nextBoard);
