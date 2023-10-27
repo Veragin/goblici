@@ -3,10 +3,12 @@ import { TBoard, TILE_SEPARATOR, TUnit, UNIT_SEPARATOR } from './constants';
 const register: Record<string, TBoard[]> = {};
 
 const mirrorVTemplate = [6, 7, 8, 3, 4, 5, 0, 1, 2];
-const mirrorHTemplate = [2, 1, 0, 3, 5, 4, 8, 7, 6];
+const mirrorHTemplate = [2, 1, 0, 5, 4, 3, 8, 7, 6];
 const rotate90Template = [6, 3, 0, 7, 4, 1, 8, 5, 2];
 const rotate180Template = rotate90Template.map((i) => rotate90Template[i]);
 const rotate270Template = rotate90Template.map((i) => rotate180Template[i]);
+const mirrorVRotate90 = rotate90Template.map((i) => mirrorVTemplate[i]);
+const mirrorHRotate90 = rotate90Template.map((i) => mirrorHTemplate[i]);
 
 const modify = [
     mirrorVTemplate,
@@ -14,6 +16,8 @@ const modify = [
     rotate90Template,
     rotate180Template,
     rotate270Template,
+    mirrorVRotate90,
+    mirrorHRotate90,
 ];
 
 export const checkSame = (board: TBoard) => {

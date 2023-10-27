@@ -30,7 +30,7 @@ export const buildTree = () => {
 
 const processLevel = () => {
     if (notSolvedBoards.length === 0) return;
-    if (depth > 3) return;
+    if (depth > 4) return;
     depth++;
     active = 0;
 
