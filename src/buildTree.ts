@@ -1,14 +1,15 @@
 import { checkSame } from './checkSame';
-import { Draw, PlayerAWon, PlayerBWon, checkWin } from './checkWin';
 import { INIT_STEP, TBoard, TEndState } from './constants';
 import { nextMoves } from './moves';
 import { createStep, parseStep } from './utils';
+import fs from 'fs';
 
+export type TNextOptions = TBoard[] | { board: TBoard; state: TEndState };
 export const tree: Record<
     string,
     {
         board: TBoard;
-        next: TBoard[] | TBoard | TEndState;
+        next: TNextOptions;
     }
 > = {};
 
@@ -21,6 +22,10 @@ export const buildTree = () => {
     const initBoard = parseStep(INIT_STEP);
     notSolvedBoards = [initBoard];
     processLevel();
+
+    const data = notSolvedBoards.map((b) => createStep(b));
+    const s = data.join('\n');
+    fs.writeFileSync('./boards.txt', s);
 };
 
 const processLevel = () => {
@@ -46,57 +51,39 @@ const processLevel = () => {
 
 const processBoard = (board: TBoard) => {
     const step = createStep(board);
-    try {
-        checkWin(board);
+
+    if (depth < 5) {
         const sameBoard = checkSame(board);
 
         if (sameBoard) {
             tree[step] = {
                 board,
-                next: sameBoard,
+                next: {
+                    state: 'SAME',
+                    board: sameBoard,
+                },
             };
             return;
         }
-
-        const nextBoards = nextMoves(board);
-        tree[step] = {
-            board,
-            next: nextBoards,
-        };
-        active++;
-
-        nextBoards.forEach((nextBoard) => {
-            const nextStep = createStep(nextBoard);
-            if (
-                tree[nextStep] === undefined &&
-                !notSolvedNextLevelBoards.includes(nextBoard) &&
-                !notSolvedBoards.includes(nextBoard)
-            ) {
-                notSolvedNextLevelBoards.push(nextBoard);
-            }
-        });
-    } catch (e) {
-        if (e instanceof Draw) {
-            tree[step] = {
-                board,
-                next: 'DRAW',
-            };
-            return;
-        }
-        if (e instanceof PlayerAWon) {
-            tree[step] = {
-                board,
-                next: 'PLAYER_A',
-            };
-            return;
-        }
-        if (e instanceof PlayerBWon) {
-            tree[step] = {
-                board,
-                next: 'PLAYER_B',
-            };
-            return;
-        }
-        console.error(e);
     }
+
+    const nextBoards = nextMoves(board);
+    tree[step] = {
+        board,
+        next: nextBoards,
+    };
+
+    if (!Array.isArray(nextBoards)) return;
+
+    active++;
+    nextBoards.forEach((nextBoard) => {
+        const nextStep = createStep(nextBoard);
+        if (
+            tree[nextStep] === undefined &&
+            !notSolvedNextLevelBoards.includes(nextBoard) &&
+            !notSolvedBoards.includes(nextBoard)
+        ) {
+            notSolvedNextLevelBoards.push(nextBoard);
+        }
+    });
 };

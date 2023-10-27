@@ -1,6 +1,8 @@
+import { TNextOptions } from './buildTree';
+import { Draw, PlayerAWon, PlayerBWon, checkWin } from './checkWin';
 import { ALL_UNITS, TBoard, TUnit } from './constants';
 
-export const nextMoves = (board: TBoard) => {
+export const nextMoves = (board: TBoard): TNextOptions => {
     const player = board.playerTurn;
 
     const allUsedUnits = board.board.flatMap((unit) => unit);
@@ -9,18 +11,41 @@ export const nextMoves = (board: TBoard) => {
         (type) => usedUnits.reduce((r, u) => r + Number(u === type), 0) < 2
     );
 
-    const nextBoards: TBoard[] = [];
-    notUsedTypes.forEach((unit) => {
-        const bs = movesByAddingNewUnit(board, unit);
-        nextBoards.push(...bs);
-    });
+    try {
+        const nextBoards: TBoard[] = [];
+        notUsedTypes.forEach((unit) => {
+            const bs = movesByAddingNewUnit(board, unit);
+            nextBoards.push(...bs);
+        });
 
-    board.board.forEach((d, index) => {
-        const bs = movesByMovingUnit(board, index);
-        nextBoards.push(...bs);
-    });
+        board.board.forEach((d, index) => {
+            const bs = movesByMovingUnit(board, index);
+            nextBoards.push(...bs);
+        });
 
-    return nextBoards;
+        return nextBoards;
+    } catch (e) {
+        if (e instanceof Draw) {
+            return {
+                board,
+                state: 'DRAW',
+            };
+        }
+        if (e instanceof PlayerAWon) {
+            return {
+                board,
+                state: 'PLAYER_A',
+            };
+        }
+        if (e instanceof PlayerBWon) {
+            return {
+                board,
+                state: 'PLAYER_B',
+            };
+        }
+        console.error(e);
+        return [];
+    }
 };
 
 export const movesByAddingNewUnit = (board: TBoard, unit: TUnit) => {
@@ -31,6 +56,7 @@ export const movesByAddingNewUnit = (board: TBoard, unit: TUnit) => {
 
         const newBoard = copyBoardWithOponentsTurn(board);
         newBoard.board[i].push(unit);
+        checkWin(newBoard);
         res.push(newBoard);
     }
 
@@ -52,6 +78,7 @@ export const movesByMovingUnit = (board: TBoard, index: number) => {
         const newBoard = copyBoardWithOponentsTurn(board);
         newBoard.board[i].push(unit);
         newBoard.board[index].pop();
+        checkWin(newBoard);
         res.push(newBoard);
     }
 

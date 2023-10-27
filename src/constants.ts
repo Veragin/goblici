@@ -18,4 +18,4 @@ export type TBoard = {
     board: TUnit[][];
 };
 
-export type TEndState = 'PLAYER_A' | 'PLAYER_B' | 'DRAW';
+export type TEndState = 'PLAYER_A' | 'PLAYER_B' | 'DRAW' | 'SAME';

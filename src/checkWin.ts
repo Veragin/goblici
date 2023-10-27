@@ -22,10 +22,10 @@ export const checkWin = (board: TBoard) => {
     const didBWin = checkStateWinOfPlayer('B');
 
     if (didAWin) {
-        if (didBWin) throw new Draw();
-        throw new PlayerAWon();
+        if (didBWin) throw new Draw(board);
+        throw new PlayerAWon(board);
     }
-    if (didBWin) throw new PlayerBWon();
+    if (didBWin) throw new PlayerBWon(board);
 };
 
 const indexes = [0, 1, 2];
@@ -38,19 +38,19 @@ const checkStateWinOfPlayer = (player: TPlayer): boolean => {
 };
 
 export class PlayerAWon extends Error {
-    constructor() {
+    constructor(public board: TBoard) {
         super('Player A has won');
     }
 }
 
 export class PlayerBWon extends Error {
-    constructor() {
+    constructor(public board: TBoard) {
         super('Player B has won');
     }
 }
 
 export class Draw extends Error {
-    constructor() {
+    constructor(public board: TBoard) {
         super('Draw');
     }
 }
