@@ -1,12 +1,12 @@
 import { TNextOptions } from './buildTree';
 import { Draw, PlayerAWon, PlayerBWon, checkWin } from './checkWin';
-import { ALL_UNITS, TBoard, TUnit } from './constants';
+import { ALL_UNITS, TBoard, TTile, TUnit } from './constants';
+import { unitSort } from './utils';
 
 export const nextMoves = (board: TBoard): TNextOptions => {
     const player = board.playerTurn;
 
-    const allUsedUnits = board.board.flatMap((unit) => unit);
-    const usedUnits = allUsedUnits.filter((unit) => unit[1] === player);
+    const usedUnits = board.usedUnits.filter((unit) => unit[1] === player);
     const notUsedTypes = ALL_UNITS[player].filter(
         (type) => usedUnits.reduce((r, u) => r + Number(u === type), 0) < 2
     );
@@ -55,7 +55,9 @@ export const movesByAddingNewUnit = (board: TBoard, unit: TUnit) => {
         if (!canAddUnitToTile(unit, board.board[i])) continue;
 
         const newBoard = copyBoardWithOponentsTurn(board);
-        newBoard.board[i].push(unit);
+        newBoard.board[i] += unit;
+        newBoard.usedUnits.push(unit);
+        newBoard.usedUnits.sort(unitSort);
         checkWin(newBoard);
         res.push(newBoard);
     }
@@ -64,20 +66,21 @@ export const movesByAddingNewUnit = (board: TBoard, unit: TUnit) => {
 };
 
 export const movesByMovingUnit = (board: TBoard, index: number) => {
-    const units = board.board[index];
-    if (units.length === 0) return [];
-    const unit = units[units.length - 1];
+    const tile = board.board[index];
+    if (tile.length === 0) return [];
+    const unit = tile.slice(-2) as TUnit;
     if (unit[1] !== board.playerTurn) return [];
 
     const res: TBoard[] = [];
+    const newTileValue = tile.slice(0, -2);
 
     for (let i in board.board) {
         if (Number(i) === index) continue;
         if (!canAddUnitToTile(unit, board.board[i])) continue;
 
         const newBoard = copyBoardWithOponentsTurn(board);
-        newBoard.board[i].push(unit);
-        newBoard.board[index].pop();
+        newBoard.board[i] += unit;
+        newBoard.board[index] = newTileValue;
         checkWin(newBoard);
         res.push(newBoard);
     }
@@ -85,14 +88,15 @@ export const movesByMovingUnit = (board: TBoard, index: number) => {
     return res;
 };
 
-const canAddUnitToTile = (unit: TUnit, tile: TUnit[]) => {
+const canAddUnitToTile = (unit: TUnit, tile: TTile) => {
     if (tile.length === 0) return true;
-    return Number(tile[tile.length - 1][0]) < Number(unit[0]);
+    return Number(tile[tile.length - 2]) < Number(unit[0]);
 };
 
 const copyBoardWithOponentsTurn = (board: TBoard): TBoard => {
     return {
         playerTurn: board.playerTurn === 'A' ? 'B' : 'A',
-        board: board.board.map((tiles) => [...tiles]),
+        board: [...board.board],
+        usedUnits: [...board.usedUnits],
     };
 };

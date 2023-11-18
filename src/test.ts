@@ -38,14 +38,18 @@ checkWinStep(case4, 'PLAYERB');
 const case5 = 'A;;;;;;;;;1A';
 checkWinStep(case5, 'NOTHING');
 
+console.log('check win done');
+
 // moves
 
-const board = parseStep(case1);
+const board = parseStep('A;;;;;;3B;2B;1B;1A');
 const moves1 = movesByAddingNewUnit(board, '2A');
 if (moves1.length !== 6) throw new Error();
 
 const moves2 = movesByMovingUnit(board, 0);
 if (moves2.length !== 8) throw new Error();
+
+console.log('moves done');
 
 // checkSame
 

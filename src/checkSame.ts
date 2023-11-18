@@ -1,4 +1,4 @@
-import { TBoard, TILE_SEPARATOR, TUnit, UNIT_SEPARATOR } from './constants';
+import { TBoard, TILE_SEPARATOR, TUnit } from './constants';
 
 const register: Record<string, TBoard[]> = {};
 
@@ -21,9 +21,7 @@ const modify = [
 ];
 
 export const checkSame = (board: TBoard) => {
-    const allUsedUnits = board.board.flatMap((unit) => unit);
-    const sorted = allUsedUnits.sort(unitSort);
-    const unitString = board.playerTurn + sorted.join('');
+    const unitString = board.playerTurn + board.usedUnits.join('');
 
     const similarBoards = register[unitString];
     if (similarBoards === undefined) {
@@ -46,8 +44,4 @@ const areBoardsSame = (a: TBoard['board'], b: TBoard['board']) => {
     return createStepOfBoard(a) === createStepOfBoard(b);
 };
 
-const createStepOfBoard = (b: TBoard['board']) =>
-    b.map((units) => units.join(UNIT_SEPARATOR)).join(TILE_SEPARATOR);
-
-const unitSort = (a: TUnit, b: TUnit) =>
-    a[0] === b[0] ? (a[1] === 'A' ? -1 : 1) : Number(b[0]) - Number(a[0]);
+const createStepOfBoard = (b: TBoard['board']) => b.join(TILE_SEPARATOR);

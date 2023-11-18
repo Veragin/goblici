@@ -1,5 +1,5 @@
 import { checkSame } from './checkSame';
-import { INIT_STEP, TBoard, TEndState } from './constants';
+import { INIT_STEP, INIT_STEP_2, TBoard, TEndState } from './constants';
 import { nextMoves } from './moves';
 import { createStep, parseStep } from './utils';
 import fs from 'fs';
@@ -30,12 +30,16 @@ export const buildTree = () => {
 
 const processLevel = () => {
     if (notSolvedBoards.length === 0) return;
-    if (depth > 4) return;
+    if (depth > 5) return;
+    const time = new Date().getTime();
     depth++;
     active = 0;
 
-    for (let board of notSolvedBoards) {
-        processBoard(board);
+    for (let i in notSolvedBoards) {
+        processBoard(notSolvedBoards[i]);
+        if (Number(i) % 5000 === 0) {
+            console.log(Number(i) / notSolvedBoards.length);
+        }
     }
 
     notSolvedBoards = notSolvedNextLevelBoards;
@@ -45,6 +49,8 @@ const processLevel = () => {
     console.log('tree length', Object.keys(tree).length);
     console.log('to process', notSolvedBoards.length);
     console.log('active', active);
+    console.log('timeMs', new Date().getTime() - time);
+    console.log('');
 
     processLevel();
 };
@@ -52,19 +58,17 @@ const processLevel = () => {
 const processBoard = (board: TBoard) => {
     const step = createStep(board);
 
-    if (depth < 5) {
-        const sameBoard = checkSame(board);
+    const sameBoard = checkSame(board);
 
-        if (sameBoard) {
-            tree[step] = {
-                board,
-                next: {
-                    state: 'SAME',
-                    board: sameBoard,
-                },
-            };
-            return;
-        }
+    if (sameBoard) {
+        tree[step] = {
+            board,
+            next: {
+                state: 'SAME',
+                board: sameBoard,
+            },
+        };
+        return;
     }
 
     const nextBoards = nextMoves(board);

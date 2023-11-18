@@ -9,12 +9,12 @@ export const checkWin = (board: TBoard) => {
     for (let i in state) {
         for (let j in state[i]) {
             const index = Number(i) * 3 + Number(j);
-            const units = board.board[index];
-            if (units.length === 0) {
+            const tile = board.board[index];
+            if (tile.length === 0) {
                 state[i][j] = null;
                 continue;
             }
-            state[i][j] = units[units.length - 1][1] as TPlayer;
+            state[i][j] = tile[tile.length - 1] as TPlayer;
         }
     }
 
