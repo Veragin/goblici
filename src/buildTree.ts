@@ -3,7 +3,7 @@ import { INIT_STEP, INIT_STEP_2, TBoard, TEndState } from './constants';
 import { nextMoves } from './moves';
 import { createStep, parseStep } from './utils';
 
-export type TNextOptions = TBoard[] | { board: TBoard; state: TEndState };
+export type TNextOptions = TBoard[] | { board?: TBoard; state: TEndState };
 export const tree: Record<
     string,
     {
@@ -12,39 +12,42 @@ export const tree: Record<
     }
 > = {};
 
-let notSolvedBoards: TBoard[] = [];
-let notSolvedNextLevelBoards: TBoard[] = [];
+let notSolvedBoards: Record<string, TBoard> = {};
+let notSolvedNextLevelBoards: Record<string, TBoard> = {};
 let active = 0;
+let nextRoundLength = 0;
 
 export const buildTree = () => {
     const initBoard = parseStep(INIT_STEP);
-    notSolvedBoards = [initBoard];
+    notSolvedBoards = { [initBoard.step]: initBoard };
 
-    for (let depth = 0; depth < 5; depth++) {
+    for (let depth = 0; depth < 7; depth++) {
         processLevel(depth);
     }
 
-    return notSolvedBoards.map((b) => createStep(b));
+    return tree;
 };
 
 const processLevel = (depth: number) => {
-    if (notSolvedBoards.length === 0) return;
+    const boardsToSolve = Object.values(notSolvedBoards);
+    if (boardsToSolve.length === 0) return;
     const time = new Date().getTime();
     active = 0;
+    nextRoundLength = 0;
 
-    for (let i in notSolvedBoards) {
-        processBoard(notSolvedBoards[i]);
+    for (let i in boardsToSolve) {
+        processBoard(boardsToSolve[i]);
         if (Number(i) % 5000 === 0) {
-            console.log(Number(i) / notSolvedBoards.length);
+            console.log(Number(i) / boardsToSolve.length);
         }
     }
 
     notSolvedBoards = notSolvedNextLevelBoards;
-    notSolvedNextLevelBoards = [];
+    notSolvedNextLevelBoards = {};
 
     console.log('ROUND', depth);
     console.log('tree length', Object.keys(tree).length);
-    console.log('to process', notSolvedBoards.length);
+    console.log('to process', nextRoundLength);
     console.log('active', active);
     console.log('timeMs', new Date().getTime() - time);
     console.log('');
@@ -67,22 +70,31 @@ const processBoard = (board: TBoard) => {
     }
 
     const nextBoards = nextMoves(board);
+
+    if (nextBoards.length === 0) {
+        tree[step] = {
+            board,
+            next: {
+                state: board.playerTurn === 'A' ? 'PLAYER_B' : 'PLAYER_A',
+            },
+        };
+        return;
+    }
+
     tree[step] = {
         board,
         next: nextBoards,
     };
 
-    if (!Array.isArray(nextBoards)) return;
-
     active++;
     nextBoards.forEach((nextBoard) => {
-        const nextStep = createStep(nextBoard);
         if (
-            tree[nextStep] === undefined &&
-            !notSolvedNextLevelBoards.includes(nextBoard) &&
-            !notSolvedBoards.includes(nextBoard)
+            tree[nextBoard.step] === undefined &&
+            notSolvedNextLevelBoards[nextBoard.step] === undefined &&
+            notSolvedBoards[nextBoard.step] === undefined
         ) {
-            notSolvedNextLevelBoards.push(nextBoard);
+            notSolvedNextLevelBoards[nextBoard.step] = nextBoard;
+            nextRoundLength++;
         }
     });
 };

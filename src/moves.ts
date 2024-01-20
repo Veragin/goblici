@@ -1,9 +1,8 @@
-import { TNextOptions } from './buildTree';
-import { Draw, PlayerAWon, PlayerBWon, checkWin } from './checkWin';
+import { checkFuture } from './checkFuture';
 import { ALL_UNITS, TBoard, TTile, TUnit } from './constants';
-import { unitSort } from './utils';
+import { createStep, unitSort } from './utils';
 
-export const nextMoves = (board: TBoard): TNextOptions => {
+export const nextMoves = (board: TBoard) => {
     const player = board.playerTurn;
 
     const usedUnits = board.usedUnits.filter((unit) => unit[1] === player);
@@ -11,41 +10,21 @@ export const nextMoves = (board: TBoard): TNextOptions => {
         (type) => usedUnits.reduce((r, u) => r + Number(u === type), 0) < 2
     );
 
-    try {
-        const nextBoards: TBoard[] = [];
-        notUsedTypes.forEach((unit) => {
-            const bs = movesByAddingNewUnit(board, unit);
-            nextBoards.push(...bs);
-        });
+    const nextBoards: TBoard[] = [];
+    notUsedTypes.forEach((unit) => {
+        const bs = movesByAddingNewUnit(board, unit);
+        nextBoards.push(...bs);
+    });
 
-        board.board.forEach((d, index) => {
-            const bs = movesByMovingUnit(board, index);
-            nextBoards.push(...bs);
-        });
+    board.board.forEach((d, index) => {
+        const bs = movesByMovingUnit(board, index);
+        nextBoards.push(...bs);
+    });
 
-        return nextBoards;
-    } catch (e) {
-        if (e instanceof Draw) {
-            return {
-                board,
-                state: 'DRAW',
-            };
-        }
-        if (e instanceof PlayerAWon) {
-            return {
-                board,
-                state: 'PLAYER_A',
-            };
-        }
-        if (e instanceof PlayerBWon) {
-            return {
-                board,
-                state: 'PLAYER_B',
-            };
-        }
-        console.error(e);
-        return [];
-    }
+    nextBoards.forEach((board) => {
+        board.step = createStep(board);
+    });
+    return nextBoards;
 };
 
 export const movesByAddingNewUnit = (board: TBoard, unit: TUnit) => {
@@ -58,8 +37,10 @@ export const movesByAddingNewUnit = (board: TBoard, unit: TUnit) => {
         newBoard.board[i] += unit;
         newBoard.usedUnits.push(unit);
         newBoard.usedUnits.sort(unitSort);
-        checkWin(newBoard);
-        res.push(newBoard);
+        try {
+            checkFuture(newBoard);
+            res.push(newBoard);
+        } catch {}
     }
 
     return res;
@@ -81,8 +62,10 @@ export const movesByMovingUnit = (board: TBoard, index: number) => {
         const newBoard = copyBoardWithOponentsTurn(board);
         newBoard.board[i] += unit;
         newBoard.board[index] = newTileValue;
-        checkWin(newBoard);
-        res.push(newBoard);
+        try {
+            checkFuture(newBoard);
+            res.push(newBoard);
+        } catch {}
     }
 
     return res;
@@ -95,6 +78,7 @@ const canAddUnitToTile = (unit: TUnit, tile: TTile) => {
 
 const copyBoardWithOponentsTurn = (board: TBoard): TBoard => {
     return {
+        step: '',
         playerTurn: board.playerTurn === 'A' ? 'B' : 'A',
         board: [...board.board],
         usedUnits: [...board.usedUnits],

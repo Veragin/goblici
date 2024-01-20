@@ -15,6 +15,7 @@ export type TUnit = TUnitA | TUnitB;
 export type TTile = string; // `TUnitTUnitTUnit`
 
 export type TBoard = {
+    step: string;
     playerTurn: TPlayer;
     board: TTile[];
     usedUnits: TUnit[];

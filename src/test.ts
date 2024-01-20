@@ -1,5 +1,6 @@
 import { checkSame } from './checkSame';
-import { Draw, PlayerAWon, PlayerBWon, checkWin } from './checkWin';
+import { checkWin } from './checkWin';
+import { Draw, PlayerAWon, PlayerBWon } from './errors';
 import { movesByAddingNewUnit, movesByMovingUnit, nextMoves } from './moves';
 import { createStep, parseStep } from './utils';
 

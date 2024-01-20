@@ -7,6 +7,7 @@ export const parseStep = (step: string): TBoard => {
     units.sort(unitSort);
 
     return {
+        step,
         playerTurn: playerTurn as TPlayer,
         board: tiles,
         usedUnits: units,
