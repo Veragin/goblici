@@ -5,16 +5,19 @@
     "license": "MIT",
     "scripts": {
         "test": "ts-node src/test.ts",
-        "start": "ts-node src/goblici.ts"
+        "build": "tsc --build",
+        "start": "ts-node src/goblici.ts",
+        "start:prof": "ts-node src/goblici.ts --prof"
     },
     "dependencies": {
         "fs": "^0.0.1-security",
         "ts-node": "^10.9.1",
+        "tsc": "^2.0.4",
         "tslib": "^2.6.2",
         "typescript": "^5.2.2"
     },
     "packageManager": "yarn@3.6.4",
     "devDependencies": {
-        "@types/node": "^20.8.9"
+        "@types/node": "^20.11.5"
     }
 }

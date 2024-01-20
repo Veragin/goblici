@@ -2,7 +2,6 @@ import { checkSame } from './checkSame';
 import { INIT_STEP, INIT_STEP_2, TBoard, TEndState } from './constants';
 import { nextMoves } from './moves';
 import { createStep, parseStep } from './utils';
-import fs from 'fs';
 
 export type TNextOptions = TBoard[] | { board: TBoard; state: TEndState };
 export const tree: Record<
@@ -15,24 +14,22 @@ export const tree: Record<
 
 let notSolvedBoards: TBoard[] = [];
 let notSolvedNextLevelBoards: TBoard[] = [];
-let depth = 0;
 let active = 0;
 
 export const buildTree = () => {
     const initBoard = parseStep(INIT_STEP);
     notSolvedBoards = [initBoard];
-    processLevel();
 
-    const data = notSolvedBoards.map((b) => createStep(b));
-    const s = data.join('\n');
-    fs.writeFileSync('./boards.txt', s);
+    for (let depth = 0; depth < 5; depth++) {
+        processLevel(depth);
+    }
+
+    return notSolvedBoards.map((b) => createStep(b));
 };
 
-const processLevel = () => {
+const processLevel = (depth: number) => {
     if (notSolvedBoards.length === 0) return;
-    if (depth > 5) return;
     const time = new Date().getTime();
-    depth++;
     active = 0;
 
     for (let i in notSolvedBoards) {
@@ -51,8 +48,6 @@ const processLevel = () => {
     console.log('active', active);
     console.log('timeMs', new Date().getTime() - time);
     console.log('');
-
-    processLevel();
 };
 
 const processBoard = (board: TBoard) => {
