@@ -1,20 +1,13 @@
-import { STATES, TEndState, TSoftTree, TTree } from '../constants';
+import { TEndState, TTree } from '../constants';
 import * as fs from 'fs';
-import { isEndState } from '../utils';
 
 const TREE_FILE_NAME = './tree.txt';
 
 export const saveTree = (tree: TTree) => {
     let data: string = '';
     Object.keys(tree).forEach((key) => {
-        const next = tree[key].next;
-        data += key + ': ';
-        if (Array.isArray(next)) {
-            data += next.map((b) => b.step).join(', ');
-        } else {
-            data += next.state + ', ' + (next.board?.step ?? '');
-        }
-        data += '\n';
+        const info = tree[key];
+        data += `${key}: ${info.state}: ${info.board.join(', ')}\n`;
     });
 
     fs.writeFileSync(TREE_FILE_NAME, data);
@@ -28,11 +21,10 @@ export const loadTree = () => {
     const s = fs.readFileSync(TREE_FILE_NAME, 'utf8');
     const data = s.split('\n').map((s) => s.split(': '));
 
-    const tree: TSoftTree = {};
+    const tree: TTree = {};
     for (let d of data) {
         if (d.length < 2) continue;
-        const next = d[1].split(', ');
-        tree[d[0]] = isEndState(next[0]) ? { state: next[0], board: next[1] } : next;
+        tree[d[0]] = { state: d[1] as TEndState, board: d[2].split(', ') };
     }
 
     return tree;

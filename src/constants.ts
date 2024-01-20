@@ -11,6 +11,7 @@ export type TPlayer = 'A' | 'B';
 
 type TUnitA = (typeof ALL_UNITS.A)[number];
 type TUnitB = (typeof ALL_UNITS.B)[number];
+export type TStep = string;
 export type TUnit = TUnitA | TUnitB;
 export type TTile = string; // `TUnitTUnitTUnit`
 
@@ -21,15 +22,7 @@ export type TBoard = {
     usedUnits: TUnit[];
 };
 
-export const STATES = ['PLAYER_A', 'PLAYER_B', 'DRAW', 'SAME'] as const;
+export const STATES = ['PLAYER_A', 'PLAYER_B', 'DRAW', 'SAME', 'NONE'] as const;
 export type TEndState = (typeof STATES)[number];
 
-export type TNextOptions = TBoard[] | { board?: TBoard; state: TEndState };
-export type TTree = Record<
-    string,
-    {
-        board: TBoard;
-        next: TNextOptions;
-    }
->;
-export type TSoftTree = Record<string, string[] | { board?: string; state: TEndState }>;
+export type TTree = Record<TStep, { board: TStep[]; state: TEndState }>;

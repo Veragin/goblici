@@ -53,11 +53,8 @@ const processBoard = (board: TBoard) => {
 
     if (sameBoard) {
         tree[step] = {
-            board,
-            next: {
-                state: 'SAME',
-                board: sameBoard,
-            },
+            state: 'SAME',
+            board: [sameBoard.step],
         };
         return;
     }
@@ -66,17 +63,15 @@ const processBoard = (board: TBoard) => {
 
     if (nextBoards.length === 0) {
         tree[step] = {
-            board,
-            next: {
-                state: board.playerTurn === 'A' ? 'PLAYER_B' : 'PLAYER_A',
-            },
+            state: board.playerTurn === 'A' ? 'PLAYER_B' : 'PLAYER_A',
+            board: [],
         };
         return;
     }
 
     tree[step] = {
-        board,
-        next: nextBoards,
+        state: 'NONE',
+        board: nextBoards.map((b) => b.step),
     };
 
     active++;
