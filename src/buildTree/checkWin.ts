@@ -1,5 +1,5 @@
-import { TPlayer, TBoard } from './constants';
-import { Draw, PlayerAWon, PlayerBWon } from './errors';
+import { TPlayer, TBoard } from '../constants';
+import { Draw, PlayerAWon, PlayerBWon } from '../errors';
 
 const state: number[][] = [
     [0, 0, 0],

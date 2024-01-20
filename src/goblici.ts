@@ -1,4 +1,4 @@
-import { buildTree } from './buildTree';
+import { buildTree } from './buildTree/buildTree';
 import * as fs from 'fs';
 
 const tree = buildTree();

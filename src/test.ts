@@ -1,7 +1,7 @@
-import { checkSame } from './checkSame';
-import { checkWin } from './checkWin';
+import { checkSame } from './buildTree/checkSame';
+import { checkWin } from './buildTree/checkWin';
 import { Draw, PlayerAWon, PlayerBWon } from './errors';
-import { movesByAddingNewUnit, movesByMovingUnit, nextMoves } from './moves';
+import { movesByAddingNewUnit, movesByMovingUnit, nextMoves } from './buildTree/moves';
 import { createStep, parseStep } from './utils';
 
 // check win

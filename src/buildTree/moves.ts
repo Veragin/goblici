@@ -1,6 +1,6 @@
 import { checkFuture } from './checkFuture';
-import { ALL_UNITS, TBoard, TTile, TUnit } from './constants';
-import { createStep, unitSort } from './utils';
+import { ALL_UNITS, TBoard, TTile, TUnit } from '../constants';
+import { createStep, unitSort } from '../utils';
 
 export const nextMoves = (board: TBoard) => {
     const player = board.playerTurn;

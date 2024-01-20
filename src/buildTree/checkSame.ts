@@ -1,4 +1,4 @@
-import { TBoard, TILE_SEPARATOR, TUnit } from './constants';
+import { TBoard, TILE_SEPARATOR, TUnit } from '../constants';
 
 const register: Record<string, TBoard[]> = {};
 

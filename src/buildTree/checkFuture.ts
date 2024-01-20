@@ -1,5 +1,5 @@
-import { TBoard } from './constants';
-import { NotAMove } from './errors';
+import { TBoard } from '../constants';
+import { NotAMove } from '../errors';
 
 const state: number[][] = [
     [0, 0, 0],
