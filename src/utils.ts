@@ -1,4 +1,4 @@
-import { TBoard, TILE_SEPARATOR, TPlayer, TUnit } from './constants';
+import { STATES, TBoard, TEndState, TILE_SEPARATOR, TPlayer, TUnit } from './constants';
 
 export const parseStep = (step: string): TBoard => {
     const [playerTurn, ...tiles] = step.split(TILE_SEPARATOR);
@@ -21,3 +21,5 @@ export const createStep = (board: TBoard): string => {
 
 export const unitSort = (a: TUnit, b: TUnit) =>
     a[0] === b[0] ? (a[1] === 'A' ? -1 : 1) : Number(b[0]) - Number(a[0]);
+
+export const isEndState = (s: string): s is TEndState => STATES.includes(s as any);

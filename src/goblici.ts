@@ -1,17 +1,8 @@
 import { buildTree } from './buildTree/buildTree';
-import * as fs from 'fs';
+import { loadTree, saveTree } from './loader/treeLoader';
 
-const tree = buildTree();
-let data: string = '';
-Object.keys(tree).forEach((key) => {
-    const next = tree[key].next;
-    data += key + ': ';
-    if (Array.isArray(next)) {
-        data += next.map((b) => b.step).join(', ');
-    } else {
-        data += next.state + (next.board?.step ?? '');
-    }
-    data += '\n';
-});
+// const tree = buildTree(6);
+// saveTree(tree);
 
-fs.writeFileSync('./boards.txt', data);
+const tree = loadTree();
+console.log('done');

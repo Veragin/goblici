@@ -21,4 +21,15 @@ export type TBoard = {
     usedUnits: TUnit[];
 };
 
-export type TEndState = 'PLAYER_A' | 'PLAYER_B' | 'DRAW' | 'SAME';
+export const STATES = ['PLAYER_A', 'PLAYER_B', 'DRAW', 'SAME'] as const;
+export type TEndState = (typeof STATES)[number];
+
+export type TNextOptions = TBoard[] | { board?: TBoard; state: TEndState };
+export type TTree = Record<
+    string,
+    {
+        board: TBoard;
+        next: TNextOptions;
+    }
+>;
+export type TSoftTree = Record<string, string[] | { board?: string; state: TEndState }>;

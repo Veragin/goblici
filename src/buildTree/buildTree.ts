@@ -1,28 +1,21 @@
 import { checkSame } from './checkSame';
-import { INIT_STEP, INIT_STEP_2, TBoard, TEndState } from '../constants';
+import { INIT_STEP, INIT_STEP_2, TBoard, TTree } from '../constants';
 import { nextMoves } from './moves';
 import { createStep, parseStep } from '../utils';
 
-export type TNextOptions = TBoard[] | { board?: TBoard; state: TEndState };
-export const tree: Record<
-    string,
-    {
-        board: TBoard;
-        next: TNextOptions;
-    }
-> = {};
+export const tree: TTree = {};
 
 let notSolvedBoards: Record<string, TBoard> = {};
 let notSolvedNextLevelBoards: Record<string, TBoard> = {};
 let active = 0;
 let nextRoundLength = 0;
 
-export const buildTree = () => {
+export const buildTree = (maxDepth: number) => {
     const initBoard = parseStep(INIT_STEP);
     notSolvedBoards = { [initBoard.step]: initBoard };
 
-    for (let depth = 0; depth < 7; depth++) {
-        console.log('ROUND', depth);
+    for (let depth = 0; depth < maxDepth; depth++) {
+        console.log('ROUND', depth + 1);
         processLevel();
     }
 
@@ -38,7 +31,7 @@ const processLevel = () => {
 
     for (let i in boardsToSolve) {
         processBoard(boardsToSolve[i]);
-        if (Number(i) % 5000 === 0) {
+        if (Number(i) % 5000 === 4999) {
             console.log(Number(i) / boardsToSolve.length);
         }
     }

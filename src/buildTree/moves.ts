@@ -21,9 +21,6 @@ export const nextMoves = (board: TBoard) => {
         nextBoards.push(...bs);
     });
 
-    nextBoards.forEach((board) => {
-        board.step = createStep(board);
-    });
     return nextBoards;
 };
 
@@ -39,6 +36,7 @@ export const movesByAddingNewUnit = (board: TBoard, unit: TUnit) => {
         newBoard.usedUnits.sort(unitSort);
         try {
             checkFuture(newBoard);
+            newBoard.step = createStep(newBoard);
             res.push(newBoard);
         } catch {}
     }
@@ -64,6 +62,7 @@ export const movesByMovingUnit = (board: TBoard, index: number) => {
         newBoard.board[index] = newTileValue;
         try {
             checkFuture(newBoard);
+            newBoard.step = createStep(newBoard);
             res.push(newBoard);
         } catch {}
     }
