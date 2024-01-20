@@ -51,7 +51,7 @@ const check = (
     const tile2Value = Number(tile2[tile2.length - 2]);
     const tile3Value = Number(tile3[tile3.length - 2]);
 
-    if (tile1Value + tile2Value + tile3Value !== 6) {
+    if (tile1Value + tile2Value + tile3Value !== 8) {
         throw new NotAMove();
     }
 };

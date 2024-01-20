@@ -7,7 +7,8 @@
         "test": "ts-node src/test.ts",
         "build": "tsc --build",
         "start": "ts-node src/goblici.ts",
-        "start:prof": "ts-node src/goblici.ts --prof"
+        "play": "ts-node src/playground.ts",
+        "start:prof": "yarn build && cd build && node --prof goblici.js"
     },
     "dependencies": {
         "fs": "^0.0.1-security",

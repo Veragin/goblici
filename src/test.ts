@@ -3,6 +3,7 @@ import { checkWin } from './buildTree/checkWin';
 import { Draw, PlayerAWon, PlayerBWon } from './errors';
 import { movesByAddingNewUnit, movesByMovingUnit, nextMoves } from './buildTree/moves';
 import { createStep, parseStep } from './utils';
+import { TBoard } from './constants';
 
 // check win
 
@@ -43,12 +44,25 @@ console.log('check win done');
 
 // moves
 
-const board = parseStep('A;;;;;;3B;2B;1B;1A');
-const moves1 = movesByAddingNewUnit(board, '2A');
-if (moves1.length !== 6) throw new Error();
+const checkMoves = (moves: TBoard[], expect: number, baseBoard: TBoard) => {
+    if (moves.length !== expect) {
+        console.log(`Wrong number of errors of ${baseBoard.step}, expected ${expect} moves.`);
+        console.log(moves);
+        throw new Error();
+    }
+};
 
-const moves2 = movesByMovingUnit(board, 0);
-if (moves2.length !== 8) throw new Error();
+const board1 = parseStep('A;;;;;;3B;2B;1B;1A');
+const moves1 = movesByAddingNewUnit(board1, '2A');
+checkMoves(moves1, 1, board1);
+
+const board2 = parseStep('A;;;;;3A;3B;2B;1B;1A');
+const moves2 = movesByMovingUnit(board2, 4);
+checkMoves(moves2, 3, board2);
+
+const board3 = parseStep('A;;1B2A3A;;;3A;;3B;3B;');
+const moves3 = nextMoves(board3);
+checkMoves(moves3, 3, board3);
 
 console.log('moves done');
 
@@ -63,8 +77,8 @@ const checkSameStep = (step: string) => {
 
 const mainStep = 'A;3A;;;;;;;;';
 checkSameStep(mainStep);
-console.log(checkSameStep('A;;;;;;;3A;;'));
-console.log(checkSameStep('A;;;3A;;;;;;'));
+checkSameStep('A;;;;;;;3A;;');
+checkSameStep('A;;;3A;;;;;;');
 
 // nextMoves
 
