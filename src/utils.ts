@@ -3,7 +3,8 @@ import { TBoard, TILE_SEPARATOR, TPlayer, TUnit } from './constants';
 export const parseStep = (step: string): TBoard => {
     const [playerTurn, ...tiles] = step.split(TILE_SEPARATOR);
 
-    const units = (/\w\w/g.exec(tiles.join('')) ?? []) as TUnit[];
+    const unitsParse = step.match(/\w\w/g) ?? [];
+    const units = [...unitsParse] as TUnit[];
     units.sort(unitSort);
 
     return {
