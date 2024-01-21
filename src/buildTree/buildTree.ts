@@ -46,11 +46,10 @@ const processLevel = () => {
     notSolvedNextLevelBoards = {};
 };
 
-const processBoard = (board: TBoard) => {
-    const step = createStep(board);
+export const processBoard = (board: TBoard) => {
+    const step = board.step;
 
     const sameBoard = checkSame(board);
-
     if (sameBoard) {
         tree[step] = {
             state: 'SAME',

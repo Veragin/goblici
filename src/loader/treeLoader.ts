@@ -2,6 +2,7 @@ import { TEndState, TTree } from '../constants';
 import * as fs from 'fs';
 
 const TREE_FILE_NAME = './tree.txt';
+const LOG_FILE_NAME = './log.txt';
 
 export const saveTree = (tree: TTree) => {
     let data: string = '';
@@ -11,6 +12,10 @@ export const saveTree = (tree: TTree) => {
     });
 
     fs.writeFileSync(TREE_FILE_NAME, data);
+};
+
+export const saveLog = (data: string) => {
+    fs.writeFileSync(LOG_FILE_NAME, data);
 };
 
 export const loadTree = () => {
