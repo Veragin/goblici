@@ -1,16 +1,16 @@
 import { checkSame } from './buildTree/checkSame';
-import { checkWin } from './buildTree/checkWin';
 import { Draw, PlayerAWon, PlayerBWon } from './errors';
 import { movesByAddingNewUnit, movesByMovingUnit, nextMoves } from './buildTree/moves';
 import { createStep, parseStep } from './utils';
 import { TBoard } from './constants';
+import { checkMove } from './buildTree/checkMove';
 
 // check win
 
 const checkWinStep = (step: string, expect: 'DRAW' | 'PLAYERA' | 'PLAYERB' | 'NOTHING') => {
     try {
         const board = parseStep(step);
-        checkWin(board);
+        checkMove(board);
         if (expect !== 'NOTHING') throw new Error(`${step} - Expected ${expect} got NOTHING`);
     } catch (e) {
         if (e instanceof Draw) {
@@ -32,7 +32,7 @@ const checkWinStep = (step: string, expect: 'DRAW' | 'PLAYERA' | 'PLAYERB' | 'NO
 const case1 = 'A;3A;1A;2A;1B;;2B;;;';
 checkWinStep(case1, 'PLAYERA');
 const case2 = 'A;3A;1A;2A;1B;3B;2B;;;';
-checkWinStep(case2, 'DRAW');
+checkWinStep(case2, 'PLAYERA');
 const case3 = 'A;3A;;2A;1B;3A;2B;;;1A';
 checkWinStep(case3, 'PLAYERA');
 const case4 = 'A;3A;;2B;1B;3B;2B;1B;;1A';

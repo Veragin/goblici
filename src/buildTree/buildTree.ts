@@ -2,6 +2,7 @@ import { checkSame } from './checkSame';
 import { INIT_STEP, INIT_STEP_2, TBoard, TTree } from '../constants';
 import { nextMoves } from './moves';
 import { createStep, parseStep } from '../utils';
+import { PlayerAWon, PlayerBWon } from '../errors';
 
 export const tree: TTree = {};
 
@@ -58,7 +59,20 @@ export const processBoard = (board: TBoard) => {
         return;
     }
 
-    const nextBoards = nextMoves(board);
+    let nextBoards;
+    try {
+        nextBoards = nextMoves(board);
+    } catch (e) {
+        if (e instanceof PlayerAWon || e instanceof PlayerBWon) {
+            tree[step] = {
+                state: e instanceof PlayerAWon ? 'PLAYER_A' : 'PLAYER_B',
+                board: [e.board.step],
+            };
+        } else {
+            console.error(e);
+        }
+        return;
+    }
 
     if (nextBoards.length === 0) {
         tree[step] = {

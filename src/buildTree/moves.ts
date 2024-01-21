@@ -1,6 +1,7 @@
-import { checkFuture } from './checkFuture';
+import { checkMove } from './checkMove';
 import { ALL_UNITS, TBoard, TTile, TUnit } from '../constants';
 import { createStep, unitSort } from '../utils';
+import { PlayerAWon, PlayerBWon } from '../errors';
 
 export const nextMoves = (board: TBoard) => {
     const player = board.playerTurn;
@@ -34,11 +35,8 @@ export const movesByAddingNewUnit = (board: TBoard, unit: TUnit) => {
         newBoard.board[i] += unit;
         newBoard.usedUnits.push(unit);
         newBoard.usedUnits.sort(unitSort);
-        try {
-            checkFuture(newBoard);
-            newBoard.step = createStep(newBoard);
-            res.push(newBoard);
-        } catch {}
+
+        checkAndAddToMoves(newBoard, res);
     }
 
     return res;
@@ -60,14 +58,26 @@ export const movesByMovingUnit = (board: TBoard, index: number) => {
         const newBoard = copyBoardWithOponentsTurn(board);
         newBoard.board[i] += unit;
         newBoard.board[index] = newTileValue;
-        try {
-            checkFuture(newBoard);
-            newBoard.step = createStep(newBoard);
-            res.push(newBoard);
-        } catch {}
+
+        checkAndAddToMoves(newBoard, res);
     }
 
     return res;
+};
+
+const checkAndAddToMoves = (board: TBoard, moves: TBoard[]) => {
+    try {
+        checkMove(board);
+        board.step = createStep(board);
+        moves.push(board);
+    } catch (e) {
+        if (e instanceof PlayerAWon && board.playerTurn === 'B') {
+            throw e;
+        }
+        if (e instanceof PlayerBWon && board.playerTurn === 'A') {
+            throw e;
+        }
+    }
 };
 
 const canAddUnitToTile = (unit: TUnit, tile: TTile) => {
