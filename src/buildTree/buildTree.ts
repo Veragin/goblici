@@ -1,4 +1,4 @@
-import { checkSame } from './checkSame';
+import { checkSame, getSameSteps } from './checkSame';
 import { INIT_STEP, INIT_STEP_2, TBoard, TTree } from '../constants';
 import { nextMoves } from './moves';
 import { createStep, parseStep } from '../utils';
@@ -50,15 +50,6 @@ const processLevel = () => {
 export const processBoard = (board: TBoard) => {
     const step = board.step;
 
-    const sameBoard = checkSame(board);
-    if (sameBoard) {
-        tree[step] = {
-            state: 'SAME',
-            board: [sameBoard.step],
-        };
-        return;
-    }
-
     let nextBoards;
     try {
         nextBoards = nextMoves(board);
@@ -95,6 +86,17 @@ export const processBoard = (board: TBoard) => {
             notSolvedBoards[nextBoard.step] === undefined
         ) {
             notSolvedNextLevelBoards[nextBoard.step] = nextBoard;
+
+            const variants = getSameSteps(nextBoard);
+            variants.forEach((variant) => {
+                if (tree[variant] === undefined) {
+                    tree[variant] = {
+                        state: 'SAME',
+                        board: [nextBoard.step],
+                    };
+                }
+            });
+
             nextRoundLength++;
         }
     });

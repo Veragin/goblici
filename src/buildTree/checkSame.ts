@@ -1,4 +1,4 @@
-import { TBoard, TILE_SEPARATOR, TUnit } from '../constants';
+import { TBoard, TILE_SEPARATOR, TStep, TUnit } from '../constants';
 
 const register: Record<string, TBoard[]> = {};
 
@@ -20,6 +20,11 @@ const modify = [
     mirrorHRotate90,
 ];
 
+export const getSameSteps = (board: TBoard) => {
+    const variants = modify.map((mod) => mod.map((i) => board.board[i]));
+    return variants.map((variant) => `${board.playerTurn};${variant.join(TILE_SEPARATOR)}`);
+};
+
 export const checkSame = (board: TBoard) => {
     const unitString = board.playerTurn + board.usedUnits.join('');
 
@@ -30,7 +35,6 @@ export const checkSame = (board: TBoard) => {
     }
 
     const variants = modify.map((mod) => mod.map((i) => board.board[i]));
-    //const variantSteps = variants.map(variant => createStepOfBoard(variant));
     for (let b of similarBoards) {
         if (variants.some((variant) => areBoardsSame(variant, b.board))) {
             return b;
